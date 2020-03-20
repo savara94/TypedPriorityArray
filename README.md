@@ -1,2 +1,2 @@
 # TypedPriorityArray
-Simple implementation of priority queue in Python with fancy name 'TypedPriorityArray'.
+Simple implementation of priority queue in Python with a fancy name 'TypedPriorityArray'.
