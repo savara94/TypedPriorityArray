@@ -44,6 +44,27 @@ class TypedPriorityArray(object):
 
         return True
 
+    def _bin_search(self, element):
+        length = self.length
+        max_bound = length - 1
+        min_bound = 0
+        index = 0
+        while min_bound <= max_bound:
+            index = (max_bound + min_bound) // 2
+            curr = self.__container[index]
+            if self.__cmp(element, curr) == 0:
+                return (index, True)
+            elif self.__cmp(element, curr) > 0:
+                min_bound = index + 1
+            else:
+                max_bound = index - 1
+
+        if length >= 1:
+            if self.__cmp(element, self.__container[index]) > 0:
+                index = index + 1
+
+        return (index, False)
+
     @staticmethod
     def _is_valid_class_type(class_type):
         try:
@@ -83,14 +104,17 @@ class TypedPriorityArray(object):
         self.__rev = -1 if descending else 1
 
     def insert(self, element):
-        for i, curr in enumerate(self.__container):
+        '''for i, curr in enumerate(self.__container):
             if self.__cmp(curr, element) >= 0:
                 self.__container.insert(i, element)
                 return
         self.__container.append(element)
+        '''
+        index, _contains = self._bin_search(element)
+        self.__container.insert(index, element)
 
     def pop(self, index):
-        self.__container.pop(index)
+        return self.__container.pop(index)
 
     def index_of(self, element):
         return self.__container.index(element)
@@ -115,4 +139,4 @@ class TypedPriorityArray(object):
         return str(self)
 
     def __contains__(self, element):
-        return element in self.__container
+        return self._bin_search(element)[1]
