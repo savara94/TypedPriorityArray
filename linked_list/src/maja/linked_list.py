@@ -1,4 +1,3 @@
-
 class _Node:
     """
     Basic object in linked list
@@ -11,8 +10,8 @@ class _IteratorLinkedList:
     """
     Iterator for Linked List
     """
-    def __init__(self, head):
-        self.current = head
+    def __init__(self, first):
+        self.current = first
     def __iter__(self):
         return self
     def __next__(self):
@@ -22,17 +21,36 @@ class _IteratorLinkedList:
         self.current = self.current.next
         return value
 
+class _ReversedIterator:
+    '''
+    Reversed
+    '''
+    def __init__(self, first, last):
+        self.curr = first
+        self.first = first
+        self.last = last
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.last is None:
+            raise StopIteration
+        while self.curr is not None and self.curr.next != self.last:
+            self.curr = self.curr.next
+        value = self.last.value
+        self.last = self.curr
+        self.curr = self.first
+        return value
 
 class LinkedList:
     """
     Linked List implementation.
     """
-
     def __init__(self, *args, **kwargs):
         lenght = len(args)
         elements = []
         self.__len = 0
         self.__head = _Node()
+        self.__tail = _Node()
         self.__max = kwargs.get('max_size') if "max_size" in kwargs else None
         if lenght == 1:
             obj = args[0]
@@ -46,7 +64,6 @@ class LinkedList:
             raise ValueError("You must provide one iterable object or more objects to insert")
         for i in elements:
             self.append(i)
-
 
     @property
     def length(self):
@@ -65,6 +82,8 @@ class LinkedList:
     def _find_node(self, index):
         if index >= self.length:
             raise IndexError("Index out of range")
+        if index == self.length - 1:
+            return self.__tail
         curr = self.__head.next
         curr_index = 0
         while curr_index != index:
@@ -73,8 +92,8 @@ class LinkedList:
         return curr
 
     def _search(self, elem):
-        for i, x in enumerate(self):
-            if x == elem:
+        for i, item in enumerate(self):
+            if item == elem:
                 return(i, True)
         return(-1, False)
 
@@ -101,8 +120,10 @@ class LinkedList:
         if index == 0:
             self.__head.next = node.next
         else:
-            self._find_node(index-1).next = node.next
-
+            node_previous = self._find_node(index-1)
+            node_previous.next = node.next
+            if index == self.length-1:
+                self.__tail = node_previous
         node.next = None
         self.__len -= 1
         return node.value
@@ -113,10 +134,18 @@ class LinkedList:
     def append(self, element):
         new_node = _Node(element)
         self._increase_len()
-        curr = self.__head
-        while curr.next is not None:
-            curr = curr.next
-        curr.next = new_node
+        if self.__len == 1:
+            self.__head.next = new_node
+        self.__tail.next = new_node
+        self.__tail = new_node
+
+    def __reversed__(self):
+        return _ReversedIterator(self.__head.next, self.__tail)
+
+    def inverse(self):
+
+        inversed_llist = LinkedList(self.__reversed__(), max_size=self.__max)
+        return inversed_llist
 
     def __contains__(self, elem):
         return self._search(elem)[1]
@@ -127,9 +156,11 @@ class LinkedList:
     def __getitem__(self, index):
         if index >= self.length:
             raise IndexError("Index out of range")
-        for i, x in enumerate(self):
+        if index == self.length-1:
+            return self.__tail.value
+        for i, item in enumerate(self):
             if i == index:
-                return x
+                return item
 
     def __len__(self):
         return self.length
