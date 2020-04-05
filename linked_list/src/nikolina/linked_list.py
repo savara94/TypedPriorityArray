@@ -72,13 +72,11 @@ class LinkedList:
         self.insert(len(self), element)
 
     def index_of(self, element):
-        __index = 0
-        current = self.__head
-        while current is not None:
-            if current.item == element:
-                return __index
-            current = current.next
-            __index += 1
+        index = 0
+        for item in self:
+            if item == element:
+                return index
+            index += 1
         return -1
     def inverse(self):
         self.__inversed = True
@@ -87,63 +85,34 @@ class LinkedList:
         self.__inversed = True
         return iter(self)
     def __iter__(self):
-        if self.__inversed:
-            self.indexIter = len(self) - 1
-        else:
-            self.indexIter = 0
-        return self
-    def __next__(self):
-        if self.__inversed:
-            if self.indexIter < 0:
-                raise StopIteration
-            item = self[self.indexIter]
-            self.indexIter -= 1
-            return item
-        else:
-            if self.indexIter >= len(self):
-                raise StopIteration
-            item = self[self.indexIter]
-            self.indexIter += 1
-            return item
-    def __len__(self):
-        if self.__head is None:
-            return 0
         current = self.__head
-        length = 0
         while current is not None:
+            yield current.item
+            current = current.next 
+
+    #def __next__(self):
+
+    def __len__(self):
+        length = 0
+        for item in self:
             length += 1
-            current = current.next
         return length
     def __contains__(self, element):
-        current = self.__head
-        while current is not None:
-            if current.item == element:
-                return True
-            current = current.next
+        if self.index_of(element) != -1:
+            return True
         return False
     def __getitem__(self, index):
         i = 0
-        current = self.__head
-        while current is not None:
+        for item in self:
             if i == index:
-                return current.item
-            current = current.next
+                return item
             i += 1
     def __str__(self):
-        ll = ""
-        current = self.__head
-        while current is not None:
-            if current.next != None:
-                ll += str(current.item) + ' -> '
-            else:
-                ll += str(current.item)
-            current = current.next
-        return ll
+        return " -> ".join(str(i) for i in self)
     @property
     def length(self):
         return len(self)
     @property
     def max_size(self):
         return self.__max_size
-    #treba return iterator
-    #da ide u rikverc
+    
