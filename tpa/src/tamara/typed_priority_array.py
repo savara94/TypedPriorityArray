@@ -62,7 +62,7 @@ class TypedPriorityArray(object):
     @property
     def reversed(self):
         return self._reversed
- 
+
     @reversed.setter
     def reversed(self, descending):
         if type(descending) == bool:
