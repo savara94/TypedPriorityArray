@@ -25,20 +25,17 @@ class _ReversedIterator:
     '''
     Reversed
     '''
-    def __init__(self, first, last):
-        self.curr = first
+    def __init__(self, first):
         self.first = first
-        self.last = last
+        self.elem = list(_IteratorLinkedList(first))
+        self.index = len(self.elem)
     def __iter__(self):
         return self
     def __next__(self):
-        if self.last is None:
+        if self.index == 0:
             raise StopIteration
-        while self.curr is not None and self.curr.next != self.last:
-            self.curr = self.curr.next
-        value = self.last.value
-        self.last = self.curr
-        self.curr = self.first
+        self.index -= 1
+        value = self.elem[self.index]
         return value
 
 class LinkedList:
@@ -140,10 +137,9 @@ class LinkedList:
         self.__tail = new_node
 
     def __reversed__(self):
-        return _ReversedIterator(self.__head.next, self.__tail)
+        return _ReversedIterator(self.__head.next)
 
     def inverse(self):
-
         inversed_llist = LinkedList(self.__reversed__(), max_size=self.__max)
         return inversed_llist
 
@@ -166,10 +162,7 @@ class LinkedList:
         return self.length
 
     def __str__(self):
-        output = ''
-        for i in self:
-            output = output + str(i) + ' ' + '->' + ' '
-        return output[:-4]
+        return ' -> '.join(str(x) for x in self)
 
     def __repr__(self):
         return self.__str__
