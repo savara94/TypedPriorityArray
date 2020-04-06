@@ -6,37 +6,15 @@ class _Node:
         self.value = value
         self.next = None
 
-class _IteratorLinkedList:
-    """
-    Iterator for Linked List
-    """
-    def __init__(self, first):
-        self.current = first
-    def __iter__(self):
-        return self
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-        value = self.current.value
-        self.current = self.current.next
-        return value
+def _Generator(current):
+    while current is not None:
+        yield current.value
+        current = current.next
 
-class _ReversedIterator:
-    '''
-    Reversed
-    '''
-    def __init__(self, first):
-        self.first = first
-        self.elem = list(_IteratorLinkedList(first))
-        self.index = len(self.elem)
-    def __iter__(self):
-        return self
-    def __next__(self):
-        if self.index == 0:
-            raise StopIteration
-        self.index -= 1
-        value = self.elem[self.index]
-        return value
+def _ReversedGenerator(current):
+    element = list(_Generator(current))
+    for i in range(len(element)-1, -1, -1):
+        yield element[i]
 
 class LinkedList:
     """
@@ -137,7 +115,7 @@ class LinkedList:
         self.__tail = new_node
 
     def __reversed__(self):
-        return _ReversedIterator(self.__head.next)
+        return _ReversedGenerator(self.__head.next)
 
     def inverse(self):
         inversed_llist = LinkedList(self.__reversed__(), max_size=self.__max)
@@ -147,7 +125,7 @@ class LinkedList:
         return self._search(elem)[1]
 
     def __iter__(self):
-        return _IteratorLinkedList(self.__head.next)
+        return _Generator(self.__head.next)
 
     def __getitem__(self, index):
         if index >= self.length:
