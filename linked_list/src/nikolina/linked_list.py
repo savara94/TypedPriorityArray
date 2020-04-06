@@ -11,7 +11,7 @@ class LinkedList:
             raise ValueError("List cann't be empty!")
         self.__head = None
         self.__max_size = kwargs["max_size"] if "max_size" in kwargs else None
-        self.__inversed = False
+        self.__reversed = False
         if len(args) == 1:
             if not isinstance(args[0], Iterable):
                 raise ValueError
@@ -40,11 +40,9 @@ class LinkedList:
             prev = current
             current = current.next
             i += 1
-        
         __new_node = _Node(element)
         __new_node.next = current
         prev.next = __new_node
-        
     def pop(self, index):
         if self.__head == None:
             return
@@ -78,23 +76,29 @@ class LinkedList:
                 return index
             index += 1
         return -1
+    def reverse(self):
+        prev = None
+        current = self.__head
+        while current is not None:
+            next = current.next
+            current.next = prev
+            prev = current
+            current = next
+        self.__head = prev
     def inverse(self):
-        self.__inversed = True
-        return self
-    def __reversed__(self):
-        self.__inversed = True
-        return iter(self)
+        _helperList = []
+        for item in self:
+            _helperList.insert(0, item)
+        return LinkedList(_helperList, max_size=self.__max_size)
     def __iter__(self):
         current = self.__head
         while current is not None:
             yield current.item
-            current = current.next 
-
+            current = current.next
     #def __next__(self):
-
     def __len__(self):
         length = 0
-        for item in self:
+        for _item in self:
             length += 1
         return length
     def __contains__(self, element):
