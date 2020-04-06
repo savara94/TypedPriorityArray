@@ -6,40 +6,15 @@ class _Node:
         self.value = value
         self.next = None
 
-class _IteratorLinkedList:
-    """
-    Iterator for Linked List
-    """
-    def __init__(self, first):
-        self.current = first
-    def __iter__(self):
-        return self
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-        value = self.current.value
-        self.current = self.current.next
-        return value
+def _Generator(current):
+    while current is not None:
+        yield current.value
+        current = current.next
 
-class _ReversedIterator:
-    '''
-    Reversed
-    '''
-    def __init__(self, first, last):
-        self.curr = first
-        self.first = first
-        self.last = last
-    def __iter__(self):
-        return self
-    def __next__(self):
-        if self.last is None:
-            raise StopIteration
-        while self.curr is not None and self.curr.next != self.last:
-            self.curr = self.curr.next
-        value = self.last.value
-        self.last = self.curr
-        self.curr = self.first
-        return value
+def _ReversedGenerator(current):
+    element = list(_Generator(current))
+    for i in range(len(element)-1, -1, -1):
+        yield element[i]
 
 class LinkedList:
     """
@@ -140,10 +115,9 @@ class LinkedList:
         self.__tail = new_node
 
     def __reversed__(self):
-        return _ReversedIterator(self.__head.next, self.__tail)
+        return _ReversedGenerator(self.__head.next)
 
     def inverse(self):
-
         inversed_llist = LinkedList(self.__reversed__(), max_size=self.__max)
         return inversed_llist
 
@@ -151,7 +125,7 @@ class LinkedList:
         return self._search(elem)[1]
 
     def __iter__(self):
-        return _IteratorLinkedList(self.__head.next)
+        return _Generator(self.__head.next)
 
     def __getitem__(self, index):
         if index >= self.length:
@@ -166,10 +140,7 @@ class LinkedList:
         return self.length
 
     def __str__(self):
-        output = ''
-        for i in self:
-            output = output + str(i) + ' ' + '->' + ' '
-        return output[:-4]
+        return ' -> '.join(str(x) for x in self)
 
     def __repr__(self):
         return self.__str__

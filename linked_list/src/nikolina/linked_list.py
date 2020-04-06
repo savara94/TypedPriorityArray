@@ -11,7 +11,7 @@ class LinkedList:
             raise ValueError("List cann't be empty!")
         self.__head = None
         self.__max_size = kwargs["max_size"] if "max_size" in kwargs else None
-        self.__inversed = False
+        self.__reversed = False
         if len(args) == 1:
             if not isinstance(args[0], Iterable):
                 raise ValueError
@@ -40,11 +40,9 @@ class LinkedList:
             prev = current
             current = current.next
             i += 1
-        
         __new_node = _Node(element)
         __new_node.next = current
         prev.next = __new_node
-        
     def pop(self, index):
         if self.__head == None:
             return
@@ -72,78 +70,53 @@ class LinkedList:
         self.insert(len(self), element)
 
     def index_of(self, element):
-        __index = 0
-        current = self.__head
-        while current is not None:
-            if current.item == element:
-                return __index
-            current = current.next
-            __index += 1
+        index = 0
+        for item in self:
+            if item == element:
+                return index
+            index += 1
         return -1
-    def inverse(self):
-        self.__inversed = True
-        return self
-    def __reversed__(self):
-        self.__inversed = True
-        return iter(self)
-    def __iter__(self):
-        if self.__inversed:
-            self.indexIter = len(self) - 1
-        else:
-            self.indexIter = 0
-        return self
-    def __next__(self):
-        if self.__inversed:
-            if self.indexIter < 0:
-                raise StopIteration
-            item = self[self.indexIter]
-            self.indexIter -= 1
-            return item
-        else:
-            if self.indexIter >= len(self):
-                raise StopIteration
-            item = self[self.indexIter]
-            self.indexIter += 1
-            return item
-    def __len__(self):
-        if self.__head is None:
-            return 0
+    def reverse(self):
+        prev = None
         current = self.__head
-        length = 0
         while current is not None:
-            length += 1
+            next = current.next
+            current.next = prev
+            prev = current
+            current = next
+        self.__head = prev
+    def inverse(self):
+        _helperList = []
+        for item in self:
+            _helperList.insert(0, item)
+        return LinkedList(_helperList, max_size=self.__max_size)
+    def __iter__(self):
+        current = self.__head
+        while current is not None:
+            yield current.item
             current = current.next
+    #def __next__(self):
+    def __len__(self):
+        length = 0
+        for _item in self:
+            length += 1
         return length
     def __contains__(self, element):
-        current = self.__head
-        while current is not None:
-            if current.item == element:
-                return True
-            current = current.next
+        if self.index_of(element) != -1:
+            return True
         return False
     def __getitem__(self, index):
         i = 0
-        current = self.__head
-        while current is not None:
+        for item in self:
             if i == index:
-                return current.item
-            current = current.next
+                return item
             i += 1
     def __str__(self):
-        ll = ""
-        current = self.__head
-        while current is not None:
-            if current.next != None:
-                ll += str(current.item) + ' -> '
-            else:
-                ll += str(current.item)
-            current = current.next
-        return ll
+        return " -> ".join(str(i) for i in self)
     @property
     def length(self):
         return len(self)
     @property
     def max_size(self):
         return self.__max_size
-    #treba return iterator
-    #da ide u rikverc
+    
